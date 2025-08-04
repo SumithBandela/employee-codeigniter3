@@ -105,7 +105,6 @@ class Employee extends CI_Controller{
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Headers
         $sheet->setCellValue('A1', 'Name');
         $sheet->setCellValue('B1', 'Email');
         $sheet->setCellValue('C1', 'Phone');
@@ -131,22 +130,40 @@ class Employee extends CI_Controller{
    
     public function download_pdf() {
         $employees =  $this->Employee_model->getAll();
-
-        $html = '<h2>Employee List</h2><table border="1" cellpadding="5">
-                    <tr><th>Name</th><th>Email</th><th>Phone</th><th>Designation</th></tr>';
-
-        foreach ($employees as $emp) {
-            $html .= "<tr>
-                        <td>{$emp->name}</td>
-                        <td>{$emp->email}</td>
-                        <td>{$emp->phone}</td>
-                        <td>{$emp->designation}</td>
-                      </tr>";
-        }
-        $html .= '</table>';
-
-        $mpdf = new Mpdf();
-        $mpdf->WriteHTML($html);
-        $mpdf->Output('employees.pdf', 'D'); 
+        $logoPath = base_url('assests/images/logo.jpg');
+        $html = '
+        <div style ="text-align:center;">
+            <img src="'. $logoPath .'" width="100"/>
+            <h2 style="margin:10px 0;">Employee Report </h2>
+            <p>this report contains list of all employees</p>
+        </div>
+        <br><br>
+        <table border="1" cellpadding="5" cellspacing="0" width="100%">
+          <thead>
+             <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Designation</th>
+           </tr>
+          </thead>
+          <tbody>';
+          foreach($employees as $emp )
+          {
+            $html  .=  "
+            <tr>
+                <td>{$emp->name}</td>
+                <td>{$emp->email}</td>
+                <td>{$emp->phone}</td>
+                <td>{$emp->designation}</td>
+            </tr>";
+          }
+            $html .='
+            </tbody></table>
+            ';
+            $mpdf = new Mpdf();
+            $mpdf->WriteHTML($html);
+            $mpdf->Output('employee_report.pdf', 'D');
+          
     }
 }
