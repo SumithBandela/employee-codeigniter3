@@ -12,6 +12,8 @@
    <div class="container mt-5">
      <h2>Employees</h2>
     <a href="<?php echo site_url('employee/create')?>" class="btn btn-primary m-2">Add Employee</a>
+    <a href="<?= site_url('employee/download_excel') ?>" class="btn btn-success">Download Excel</a> 
+    <a href="<?= site_url('employee/download_pdf')?>" class="btn btn-danger">Download PDF</a>
     <table class="table table-bordered">
         <thead>
             <tr>

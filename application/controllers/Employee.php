@@ -1,7 +1,9 @@
 <?php
 
 defined("BASEPATH") OR exit("No direct script access allowed");
-
+use Mpdf\Mpdf;  
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class Employee extends CI_Controller{
     
     public function __construct()
@@ -9,6 +11,7 @@ class Employee extends CI_Controller{
         parent::__construct();
         $this->load->database(); 
         $this->load->library('form_validation');
+        $this->load->helper('url');
     }
 
     public function index()
@@ -94,5 +97,56 @@ class Employee extends CI_Controller{
         $this->Employee_model->delete($id);
         $this->session->set_flashdata('success', 'Employee deleted successfully');
         redirect('employee');
+    }
+   
+    public function download_excel() {
+        $employees = $this->db->get('employees')->result();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Headers
+        $sheet->setCellValue('A1', 'Name');
+        $sheet->setCellValue('B1', 'Email');
+        $sheet->setCellValue('C1', 'Phone');
+        $sheet->setCellValue('D1', 'Designation');
+
+        $row = 2;
+        foreach ($employees as $emp) {
+            $sheet->setCellValue('A' . $row, $emp->name);
+            $sheet->setCellValue('B' . $row, $emp->email);
+            $sheet->setCellValue('C' . $row, $emp->phone);
+            $sheet->setCellValue('D' . $row, $emp->designation);
+            $row++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="employees.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+        exit;
+    }
+
+   
+    public function download_pdf() {
+        $employees = $this->db->get('employees')->result();
+
+        $html = '<h2>Employee List</h2><table border="1" cellpadding="5">
+                    <tr><th>Name</th><th>Email</th><th>Phone</th><th>Designation</th></tr>';
+
+        foreach ($employees as $emp) {
+            $html .= "<tr>
+                        <td>{$emp->name}</td>
+                        <td>{$emp->email}</td>
+                        <td>{$emp->phone}</td>
+                        <td>{$emp->designation}</td>
+                      </tr>";
+        }
+        $html .= '</table>';
+
+        $mpdf = new Mpdf();
+        $mpdf->WriteHTML($html);
+        $mpdf->Output('employees.pdf', 'D'); 
     }
 }
