@@ -100,7 +100,7 @@ class Employee extends CI_Controller{
     }
    
     public function download_excel() {
-        $employees = $this->db->get('employees')->result();
+        $employees =  $this->Employee_model->getAll();
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -130,7 +130,7 @@ class Employee extends CI_Controller{
 
    
     public function download_pdf() {
-        $employees = $this->db->get('employees')->result();
+        $employees =  $this->Employee_model->getAll();
 
         $html = '<h2>Employee List</h2><table border="1" cellpadding="5">
                     <tr><th>Name</th><th>Email</th><th>Phone</th><th>Designation</th></tr>';

@@ -313,4 +313,7 @@ switch (ENVIRONMENT)
  *
  * And away we go...
  */
+// Load Composer autoload
+require_once __DIR__ . '/vendor/autoload.php';
+
 require_once BASEPATH.'core/CodeIgniter.php';
